@@ -10,6 +10,30 @@ list_domains() {
   awk -F',' '{print $1}' "$connections_file" | sort | nl -w1 -s". " | column -c $(tput cols)
 }
 
+# Function to add a new entry to the connections file
+add_entry() {
+  read -p "Enter domain: " domain
+  read -p "Enter username: " username
+  read -p "Enter IP address: " ip_address
+
+  # Check if the domain already exists
+  if grep -q "^$domain," "$connections_file"; then
+    echo "ERROR: Domain $domain already exists."
+    exit 1
+  fi
+
+  # Append the new entry to the connections file
+  echo "$domain,$username,$ip_address" >> "$connections_file"
+  echo "New entry added: $domain,$username,$ip_address"
+}
+
+# Function to list connections grouped by IP address
+list_by_server() {
+  echo "Connections grouped by IP:"
+  # Sort by IP address, print domain and username
+  awk -F',' '{ print $3,$1,$2 }' "$connections_file" | sort | uniq | column -t
+}
+
 # Check if the connections file exists
 if [ ! -f "$connections_file" ]; then
   echo "ERROR: No ~/.connections file found."
@@ -40,6 +64,18 @@ if [ "$1" == "--list" ]; then
 
   # Run the script as if the user had entered the domain
   $0 "$chosen_domain"
+  exit 0
+fi
+
+# Check if the script was run with the --add option
+if [ "$1" == "--add" ]; then
+  add_entry
+  exit 0
+fi
+
+# Check if the script was run with the --by-server option
+if [ "$1" == "--by-server" ]; then
+  list_by_server
   exit 0
 fi
 
