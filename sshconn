@@ -27,13 +27,62 @@ add_entry() {
   echo "New entry added: $domain,$username,$ip_address"
 }
 
-# Function to list connections grouped by IP address
+# Function to list connections grouped by IP address, sorted alphabetically within each IP group
 list_by_server() {
   echo "Connections grouped by IP:"
-  # Sort by IP address first, then by domain and username alphabetically
-  awk -F',' '{ print $3,$1,$2 }' "$connections_file" | sort -t' ' -k1,1 -k2,2 | column -t
-}
+  awk -F',' '{ print $3,$1,$2 }' "$connections_file" | sort -t' ' -k1,1 -k2,2 | nl -w1 -s". " | column -t
 
+  # Prompt for a number selection
+  read -p "Select a number to proceed: " selection_number
+
+  # Get the selected entry
+  selected_line=$(awk -F',' '{ print $3,$1,$2 }' "$connections_file" | sort -t' ' -k1,1 -k2,2 | nl -w1 -s". " | awk "NR==$selection_number")
+
+  # If no match, show error
+  if [ -z "$selected_line" ]; then
+    echo "ERROR: Invalid selection."
+    exit 1
+  fi
+
+  # Extract domain, username, and IP from the selected line
+  ip_address=$(echo "$selected_line" | awk '{print $2}')
+  domain=$(echo "$selected_line" | awk '{print $3}')
+  username=$(echo "$selected_line" | awk '{print $4}')
+
+  # Provide the next action prompt
+  read -p "You've selected $domain. Would you like to connect (y), edit (edit), or delete (del)? [y/edit/del] " action
+
+  # Handle the selected action
+  case "$action" in
+    y)
+      ssh_command="ssh $username@$ip_address"
+      echo "$ssh_command" | pbcopy
+      echo "The connection for \`$ssh_command\` is now available via CMD+V."
+      ;;
+    edit)
+      echo "Editing $domain:"
+      read -p "Enter new domain (or press Enter to keep '$domain'): " new_domain
+      read -p "Enter new username (or press Enter to keep '$username'): " new_username
+
+      # Use existing domain/username if the user presses Enter
+      new_domain=${new_domain:-$domain}
+      new_username=${new_username:-$username}
+
+      # Update the connection in the file
+      sed -i '' "s|^$domain,$username,$ip_address|$new_domain,$new_username,$ip_address|" "$connections_file"
+      echo "Entry updated."
+      ;;
+    del)
+      echo "Deleting $domain..."
+      sed -i '' "/^$domain,$username,$ip_address/d" "$connections_file"
+      echo "$domain has been deleted."
+      ;;
+    *)
+      echo "Invalid option. Exiting."
+      exit 1
+      ;;
+  esac
+}
 
 # Check if the connections file exists
 if [ ! -f "$connections_file" ]; then
