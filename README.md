@@ -65,7 +65,49 @@ This will display the help menu with available options.
   sshconn [domain]
   ```
 
+## Enabling Autocompletion for `sshconn`
+
+To enable autocompletion for the `sshconn` command, follow these steps:
+
+### 1. Download the Autocompletion Script
+
+Download the autocompletion script to your local machine:
+
+```bash
+curl -L https://raw.githubusercontent.com/mwender/sshconn/main/sshconn-completion.sh -o ~/.sshconn-completion.sh
+```
+
+### 2. Add the Following Line to Your Shell Configuration
+
+For **Bash** users, add this line to your `~/.bashrc` (or `~/.bash_profile` if you're using macOS) to enable autocompletion every time you open a new terminal:
+
+```bash
+source ~/.sshconn-completion.sh
+```
+
+For **Zsh** users, add this to your `~/.zshrc`:
+
+```bash
+source ~/.sshconn-completion.sh
+```
+
+### 3. Apply the Changes
+
+After making the changes, apply them by running:
+
+```bash
+source ~/.bashrc     # For Bash users
+source ~/.zshrc      # For Zsh users
+```
+
+Now, when you type `sshconn` and press `TAB`, it will autocomplete available domains based on the entries in your `~/.connections` file.
+
+
 ## Changelog
+
+_1.1.0_
+
+- Adding auto complete function.
 
 _1.0.0_
 
