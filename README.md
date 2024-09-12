@@ -1,3 +1,5 @@
+![SSHConn - a Bash script for managing your SSH Connections](https://raw.githubusercontent.com/mwender/sshconn/main/thumbnail.png)
+
 # SSHConn
 
 `SSHConn` is a Bash script that simplifies the management of SSH connections. It allows you to store, list, and manage SSH connections based on domain, username, and IP address. You can also group connections by server, add new connections, and perform SSH connections directly by specifying a domain.
@@ -104,6 +106,10 @@ Now, when you type `sshconn` and press `TAB`, it will autocomplete available dom
 
 
 ## Changelog
+
+_1.1.1_
+
+- Adding repo thumbnail.
 
 _1.1.0_
 
