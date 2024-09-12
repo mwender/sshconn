@@ -1,0 +1,81 @@
+#!/bin/bash
+
+# Define the connections file path
+connections_file="$HOME/.connections"
+
+# Function to list all domains with numbers, sorted alphabetically by domain
+list_domains() {
+  echo "Available connections:"
+  # Sort the connections file by domain (first field) and then number the results
+  awk -F',' '{print $1}' "$connections_file" | sort | nl -w1 -s". " | column -c $(tput cols)
+}
+
+# Check if the connections file exists
+if [ ! -f "$connections_file" ]; then
+  echo "ERROR: No ~/.connections file found."
+  exit 1
+fi
+
+# Check if the script was run with the --list option
+if [ "$1" == "--list" ]; then
+  list_domains
+
+  # Prompt the user to select a number
+  read -p "Enter the number corresponding to the domain: " domain_number
+
+  # Validate the input as a number
+  if ! [[ "$domain_number" =~ ^[0-9]+$ ]]; then
+    echo "ERROR: Invalid input. Please enter a number."
+    exit 1
+  fi
+
+  # Get the domain for the chosen number (sorted order)
+  chosen_domain=$(awk -F',' '{print $1}' "$connections_file" | sort | awk "NR==$domain_number")
+
+  # Check if a domain was found
+  if [ -z "$chosen_domain" ]; then
+    echo "ERROR: No domain found for number $domain_number."
+    exit 1
+  fi
+
+  # Run the script as if the user had entered the domain
+  $0 "$chosen_domain"
+  exit 0
+fi
+
+# Regular domain handling flow
+domain_input=$1
+
+# Check if a domain was provided
+if [ -z "$domain_input" ]; then
+  echo "ERROR: Please provide a domain as input or use the --list option."
+  exit 1
+fi
+
+# Search for matching domain entries
+matches=$(grep "^$domain_input," "$connections_file")
+
+# Count the number of matches
+match_count=$(echo "$matches" | wc -l)
+
+# Handle different cases for match count
+if [ "$match_count" -eq 0 ]; then
+  echo "No connection found for $domain_input."
+  exit 0
+elif [ "$match_count" -gt 1 ]; then
+  echo "ERROR: Multiple entries for $domain_input. Please edit your ~/.connections file to have only one line for this domain."
+  exit 1
+else
+  # Extract user and IP address from the matched row
+  user=$(echo "$matches" | cut -d',' -f2)
+  ip_address=$(echo "$matches" | cut -d',' -f3)
+
+  # Create the ssh command
+  ssh_command="ssh $user@$ip_address"
+
+  # Copy the ssh command to the clipboard (using pbcopy for macOS)
+  echo "$ssh_command" | pbcopy
+
+  # Inform the user
+  echo "The connection for \`$ssh_command\` is now available via CMD+V."
+fi
