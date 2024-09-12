@@ -30,9 +30,10 @@ add_entry() {
 # Function to list connections grouped by IP address
 list_by_server() {
   echo "Connections grouped by IP:"
-  # Sort by IP address, print domain and username
-  awk -F',' '{ print $3,$1,$2 }' "$connections_file" | sort | uniq | column -t
+  # Sort by IP address first, then by domain and username alphabetically
+  awk -F',' '{ print $3,$1,$2 }' "$connections_file" | sort -t' ' -k1,1 -k2,2 | column -t
 }
+
 
 # Check if the connections file exists
 if [ ! -f "$connections_file" ]; then
