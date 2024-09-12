@@ -66,9 +66,7 @@ list_by_server() {
 
   case "$action" in
     y)
-      ssh_command="ssh $username@$ip_address"
-      echo "$ssh_command" | pbcopy
-      echo "The connection for \`$ssh_command\` is now available via CMD+V."
+      ssh "$username@$ip_address"
       ;;
     edit)
       echo "Editing $domain:"
@@ -161,7 +159,6 @@ else
   user=$(echo "$matches" | cut -d',' -f2)
   ip_address=$(echo "$matches" | cut -d',' -f3)
 
-  ssh_command="ssh $user@$ip_address"
-  echo "$ssh_command" | pbcopy
-  echo "The connection for \`$ssh_command\` is now available via CMD+V."
+  # Directly execute the SSH command
+  ssh "$user@$ip_address"
 fi
