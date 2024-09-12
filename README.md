@@ -107,6 +107,10 @@ Now, when you type `sshconn` and press `TAB`, it will autocomplete available dom
 
 ## Changelog
 
+_1.1.2_
+
+- Adding "Behind the Code" section to README.
+
 _1.1.1_
 
 - Adding repo thumbnail.
@@ -118,6 +122,14 @@ _1.1.0_
 _1.0.0_
 
 - First release.
+
+## Behind the Code
+
+I developed `SSHConn` with the help of ChatGPT 4o. The program builds upon my previous script [sshman](https://github.com/mwender/sshman).
+
+Being no expert in Bash, I was the project manager while ChatGPT wrote code according to my specifications. I set the direction and defined the features. ChatGPT worked as my junior developer, helping me implement the functionality and refine the code.
+
+The result is `SSHConn`, a tool that improves SSH connection management. It adds features like autocompletion and connection grouping, making it more efficient than my original `sshman` script. Given that I have 200+ SSH connections I need to keep track of, `SSHConn` greatly simplifies that process.
 
 ## License
 
