@@ -107,6 +107,10 @@ Now, when you type `sshconn` and press `TAB`, it will autocomplete available dom
 
 ## Changelog
 
+_1.1.3_
+
+- BUGFIX: Ensuring `--add` option adds new entries on a new line inside `~/.connections`.
+
 _1.1.2_
 
 - Adding "Behind the Code" section to README.

@@ -40,6 +40,11 @@ add_entry() {
     exit 1
   fi
 
+  # Ensure the file ends with a newline before appending
+  if [ -s "$connections_file" ] && [ "$(tail -c 1 "$connections_file")" != "" ]; then
+    echo "" >> "$connections_file"
+  fi
+
   echo "$domain,$username,$ip_address" >> "$connections_file"
   echo "New entry added: $domain,$username,$ip_address"
 }
