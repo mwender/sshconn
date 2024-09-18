@@ -1,6 +1,6 @@
 ![SSHConn - a Bash script for managing your SSH Connections](https://raw.githubusercontent.com/mwender/sshconn/main/thumbnail.png)
 
-# SSHConn
+# SSHConn ![GitHub release (latest by date)](https://img.shields.io/github/v/release/mwender/sshconn)
 
 `SSHConn` is a Bash script that simplifies the management of SSH connections. It allows you to store, list, and manage SSH connections based on domain, username, and IP address. You can also group connections by server, add new connections, and perform SSH connections directly by specifying a domain.
 
@@ -10,6 +10,7 @@
 - **Group by Server**: View connections grouped by their IP address.
 - **Add New Connections**: Easily add new SSH connection entries.
 - **Connect Automatically**: Run `sshconn [domain]` to automatically SSH into a server.
+- **Secure Copy (SCP) Files**: Use the `--scp` option to securely copy files to a server.
 - **Edit or Delete**: Edit or delete existing connections.
 - **Help Menu**: A built-in help menu to display usage instructions.
 
@@ -67,6 +68,11 @@ This will display the help menu with available options.
   sshconn [domain]
   ```
 
+- **Securely copy files using SCP**:
+  ```bash
+  sshconn [domain] --scp
+  ```
+
 ## Enabling Autocompletion for `sshconn`
 
 To enable autocompletion for the `sshconn` command, follow these steps:
@@ -106,6 +112,11 @@ Now, when you type `sshconn` and press `TAB`, it will autocomplete available dom
 
 
 ## Changelog
+
+_1.2.0_
+
+- Added SCP functionality via the --scp option, allowing secure file transfers.
+- Added autocompletion for file paths when using SCP.
 
 _1.1.3_
 

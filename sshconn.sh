@@ -11,6 +11,7 @@ Options:
   --list                 List all connections with numbered options
   --by-server            Group connections by IP address and prompt for selection
   --add                  Add a new connection entry (domain, user, IP)
+  --scp                  Use SCP to copy files to a server (domain must be specified)
   -h, --help             Show this help documentation
   [domain]               Enter a domain name directly to connect to it
 
@@ -18,8 +19,9 @@ Operations:
   1. Use --list to display all available connections, sorted by domain name.
   2. Use --by-server to list connections grouped by IP addresses. You can then choose a specific connection to manage.
   3. Use --add to add a new connection (domain, username, IP) to the ~/.connections file.
-  4. If you enter a domain directly, the script will attempt to connect to that server via SSH.
-  5. After selecting a connection, you can choose to connect (y), edit (edit), or delete (del) the connection.
+  4. Use --scp with a domain to copy files via SCP.
+  5. If you enter a domain directly, the script will attempt to connect to that server via SSH.
+  6. After selecting a connection, you can choose to connect (y), edit (edit), or delete (del) the connection.
 "
 }
 
@@ -96,6 +98,40 @@ list_by_server() {
   esac
 }
 
+# Function to handle SCP connection
+scp_file() {
+  local domain_input=$1
+
+  # Fetch the matching entry
+  matches=$(grep "^$domain_input," "$connections_file")
+
+  match_count=$(echo "$matches" | wc -l)
+
+  if [ "$match_count" -eq 0 ]; then
+    echo "No connection found for $domain_input."
+    exit 0
+  elif [ "$match_count" -gt 1 ]; then
+    echo "ERROR: Multiple entries for $domain_input. Please edit your ~/.connections file to have only one line for this domain."
+    exit 1
+  else
+    user=$(echo "$matches" | cut -d',' -f2)
+    ip_address=$(echo "$matches" | cut -d',' -f3)
+  fi
+
+  # Prompt for file to copy with autocompletion
+  read -e -p "File to copy: " file_to_copy
+
+  if [ ! -f "$file_to_copy" ]; then
+    echo "ERROR: File does not exist."
+    exit 1
+  fi
+
+  read -p "Destination path on $domain_input: " destination_path
+
+  # Execute the SCP command
+  scp "$file_to_copy" "$user@$ip_address:$destination_path"
+}
+
 # Check if the connections file exists
 if [ ! -f "$connections_file" ]; then
   echo "ERROR: No ~/.connections file found."
@@ -139,6 +175,12 @@ fi
 # Check if the script was run with the --by-server option
 if [ "$1" == "--by-server" ]; then
   list_by_server
+  exit 0
+fi
+
+# Check if the script was run with the --scp option
+if [ "$2" == "--scp" ]; then
+  scp_file "$1"
   exit 0
 fi
 
